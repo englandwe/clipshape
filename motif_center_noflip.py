@@ -3,6 +3,7 @@
 #ENST00000425361        2       +       130190577       0.704   1       0       T       1       -18
 
 import sys
+import re
 
 motif=sys.argv[2]
 
@@ -18,14 +19,15 @@ with open(sys.argv[1]) as infile:
         else:
             #wrap up old range
             if subline[0][2] == '+':
-                hasmotif=''.join([x[7].upper() for x in subline]).find(motif)
+                #hasmotif=''.join([x[7].upper() for x in subline]).find(motif)
+                hasmotif=re.search(motif,''.join([x[7].upper() for x in subline]))
             elif subline[0][2] == '-':
                 #subline=subline[::-1]
                 #subline=[ x[0:9] + [-(int(x[9]))] for x in subline]
-                hasmotif=''.join([x[7].upper() for x in subline]).find(motif)
-            if hasmotif > -1:
+                hasmotif=re.search(motif,''.join([x[7].upper() for x in subline]))
+            if hasmotif != None:
                 #set zero point
-                offset=int(subline[hasmotif][9])
+                offset=int(subline[hasmotif.start()][9])
                 for entry in subline:
                     entry.append(int(entry[9])-offset-2)
                     entry.append(motif)
@@ -37,14 +39,14 @@ with open(sys.argv[1]) as infile:
 #finish last range
 subline.append(tmpline)
 if subline[0][2] == '+':
-    hasmotif=''.join([x[7].upper() for x in subline]).find(motif)
+    hasmotif=re.search(motif,''.join([x[7].upper() for x in subline]))
 elif subline[0][2] == '-':
     #subline=subline[::-1]
     #subline=[x[0:9]+ [-(int(x[9]))] for x in subline]
-    hasmotif=''.join([x[7].upper() for x in subline]).find(motif)
-if hasmotif > -1:
+    hasmotif=re.search(motif,''.join([x[7].upper() for x in subline]))
+if hasmotif != None:
     #set zero point
-    offset=int(subline[hasmotif][9])
+    offset=int(subline[hasmotif.start()][9])
     for entry in subline:
         entry.append(int(entry[9])-offset-2)
         entry.append(motif)
