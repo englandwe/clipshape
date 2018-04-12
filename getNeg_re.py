@@ -99,6 +99,7 @@ def findUnbound(tx_ranges,clip_motif,fasta_data,clip_ranges,shapedict,fp_offset,
     else:
 	peakcount=int(peakcount)
     #clip_pssm=clip_motif.pssm
+    motif_len=len(re.sub('\[[ACTG]+\]','N',clip_motif))
     random.shuffle(tx_ranges)
     txct=0
     #tx,chr,strand,start,stop (inclusive)
@@ -118,7 +119,7 @@ def findUnbound(tx_ranges,clip_motif,fasta_data,clip_ranges,shapedict,fp_offset,
         #    tmpsites.append([position,score])
         #sys.stderr.write('motif: %s; seq: %s\n' % (clip_motif,range_seq))
         for m in re.finditer(clip_motif,str(range_seq)):
-            tmpsites.append([m.start()+1,m.group()])
+            tmpsites.append([m.start(),m.group()])
         #replace with a re.search
         #pointless to go further if there are no appropriate hits
         tmpsites_pos=[x for x in tmpsites if x[0] >= 1]
@@ -128,7 +129,7 @@ def findUnbound(tx_ranges,clip_motif,fasta_data,clip_ranges,shapedict,fp_offset,
             random.shuffle(tmpsites_pos)
             chosen_one=tmpsites_pos[0]
             negstart=chosen_one[0]-fp_offset
-            negend=chosen_one[0]+tp_offset+len(clip_motif)
+            negend=chosen_one[0]+tp_offset+motif_len
             #make sure you can get the entire requested range
             if negstart >= 1 and negend <= len(range_seq):
                 #final check:  does this range overlap a positive range
